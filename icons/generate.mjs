@@ -1,13 +1,13 @@
 /* päivän sana — icon generator: node icons/generate.mjs
-   The Finnish flag: blue Nordic cross on white, rounded square.
+   Finnish Nordic cross in the app's palette: soft sky blue on cream.
 */
 import { writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 
 const svg = (size) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="22" fill="#FFFFFF"/>
-  <rect x="28" y="0" width="18" height="100" fill="#2F5D8C"/>
-  <rect x="0" y="41" width="100" height="18" fill="#2F5D8C"/>
+  <rect width="100" height="100" rx="22" fill="#FAF6EF"/>
+  <rect x="30" y="0" width="17" height="100" fill="#7FA3B8"/>
+  <rect x="0" y="42" width="100" height="17" fill="#7FA3B8"/>
 </svg>`;
 
 writeFileSync(new URL("./icon.svg", import.meta.url), svg(512));

@@ -58,6 +58,7 @@
       <button id="word-card" class="word-card hidden" type="button">
         <span id="word-side" class="word-side"></span>
         <span id="word-text" class="word-text"></span>
+        <span id="word-example" class="word-example hidden"></span>
         <span id="word-hint" class="word-hint">Tryck för att visa betydelsen</span>
       </button>
 
@@ -107,6 +108,7 @@
           <span class="answer-divider"></span>
           <span id="practice-answer-side" class="word-side">Svenska</span>
           <span id="practice-answer" class="word-text answer-text"></span>
+          <span id="practice-example" class="word-example hidden"></span>
         </span>
         <span id="practice-hint" class="word-hint"></span>
       </button>
@@ -120,14 +122,6 @@
       </div>
 
       <p id="practice-feedback" class="feedback hidden"></p>
-
-      <div id="practice-selfgrade" class="selfgrade hidden">
-        <p class="selfgrade-q">Hade du rätt?</p>
-        <div class="selfgrade-btns">
-          <button id="grade-yes" class="btn btn-primary" type="button">Ja</button>
-          <button id="grade-no" class="btn btn-ghost" type="button">Nej</button>
-        </div>
-      </div>
 
       <button id="practice-next" class="btn btn-ghost next-btn hidden" type="button">Nästa ord</button>
       <p id="practice-empty" class="empty-note hidden">Inga gamla ord att öva på ännu — kom tillbaka i morgon!</p>
@@ -190,6 +184,10 @@
           <input type="text" id="word-swedish" required autocomplete="off">
         </label>
         <label class="field">
+          <span>Exempel eller info <span class="field-opt">(valfritt)</span></span>
+          <input type="text" id="word-ex" autocomplete="off" placeholder="T.ex. en exempelmening">
+        </label>
+        <label class="field">
           <span>Datum <span class="field-opt">(valfritt — annars kö)</span></span>
           <input type="date" id="word-date">
         </label>
@@ -216,6 +214,7 @@
       <button id="modal-card" class="word-card modal-card" type="button">
         <span id="modal-side" class="word-side">Finska</span>
         <span id="modal-text" class="word-text"></span>
+        <span id="modal-example" class="word-example hidden"></span>
         <span id="modal-hint" class="word-hint">Tryck för att visa betydelsen</span>
       </button>
       <button id="modal-close" class="icon-btn modal-close" type="button" aria-label="Stäng">

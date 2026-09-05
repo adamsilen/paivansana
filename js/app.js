@@ -141,25 +141,27 @@
   function renderToday() {
     const card = $("#word-card");
     card.classList.remove("hidden");
-    card.classList.toggle("revealed", todaySide === "sv");
+    const onSv = todaySide === "sv";
+    card.classList.toggle("revealed", onSv);
 
-    $("#word-side").textContent = todaySide === "sv" ? "Svenska" : "Finska";
-    $("#word-text").textContent = todaySide === "sv" ? todayWord.swedish : todayWord.finnish;
-    $("#word-hint").textContent = todaySide === "sv" ? "" : T.tapToReveal;
+    $("#word-side").textContent = onSv ? "Svenska" : "Finska";
+    $("#word-text").textContent = onSv ? todayWord.swedish : todayWord.finnish;
+    $("#word-hint").textContent = "";
+    const ex = onSv ? todayWord.example : null;
+    $("#word-example").classList.toggle("hidden", !ex);
+    if (ex) $("#word-example").textContent = ex;
 
-    const showExercise = todaySide === "sv" && !todayChecked;
+    // exercise only on the Swedish side, and it stays until the answer is right
+    const showExercise = onSv && !todayChecked;
     $("#today-exercise").classList.toggle("hidden", !showExercise);
-    if (showExercise) {
-      $("#today-input").value = "";
-      setTimeout(() => $("#today-input").focus(), 50);
-    }
+    if (showExercise) setTimeout(() => $("#today-input").focus(), 50);
   }
 
-  async function revealToday() {
-    if (!todayWord || todaySide === "sv") return;
-    todaySide = "sv";
+  function flipToday() {
+    if (!todayWord) return;
+    todaySide = todaySide === "fi" ? "sv" : "fi";
     renderToday();
-    api.putState("today:" + api.todayISO(), "sv");
+    api.putState("today:" + api.todayISO(), todaySide);
   }
 
   function checkToday() {
@@ -167,15 +169,20 @@
     const input = $("#today-input").value;
     if (!input.trim()) return;
     const ok = isCorrect(input, todayWord.finnish);
-    todayChecked = true;
-    api.logAttempt(todayWord.id, "sv_fi", ok);
-
     const fb = $("#today-feedback");
     fb.classList.remove("hidden", "good", "bad");
-    fb.classList.add(ok ? "good" : "bad");
-    fb.textContent = ok ? "Rätt! 🎉" : "Nästan — rätt svar: " + todayWord.finnish;
-
-    $("#today-exercise").classList.add("hidden");
+    if (ok) {
+      todayChecked = true;
+      api.logAttempt(todayWord.id, "sv_fi", true);
+      fb.classList.add("good");
+      fb.textContent = "Rätt! 🎉";
+      $("#today-exercise").classList.add("hidden");
+    } else {
+      api.logAttempt(todayWord.id, "sv_fi", false);
+      fb.classList.add("bad");
+      fb.textContent = "Rätt svar: " + todayWord.finnish;
+      $("#today-input").select(); // retry directly
+    }
   }
 
   /* ════════════════════════ PRACTICE ════════════════════════ */
@@ -184,7 +191,6 @@
     $("#practice-card").classList.add("hidden");
     $("#practice-exercise").classList.add("hidden");
     $("#practice-feedback").classList.add("hidden");
-    $("#practice-selfgrade").classList.add("hidden");
     $("#practice-next").classList.add("hidden");
     $("#practice-empty").classList.add("hidden");
 
@@ -219,8 +225,8 @@
     const card = $("#practice-card");
     card.classList.remove("hidden", "revealed");
     $("#practice-answer-wrap").classList.add("hidden");
+    $("#practice-example").classList.add("hidden");
     $("#practice-feedback").classList.add("hidden");
-    $("#practice-selfgrade").classList.add("hidden");
     $("#practice-next").classList.add("hidden");
 
     if (practiceDir === "sv_fi") {
@@ -247,8 +253,12 @@
     card.classList.add("revealed");
     $("#practice-answer-wrap").classList.remove("hidden");
     $("#practice-answer").textContent = practiceWord.swedish;
+    const ex = practiceWord.example;
+    $("#practice-example").classList.toggle("hidden", !ex);
+    if (ex) $("#practice-example").textContent = ex;
     $("#practice-hint").textContent = "";
-    $("#practice-selfgrade").classList.remove("hidden");
+    api.logAttempt(practiceWord.id, "fi_sv", true); // reveal = attempt logged
+    $("#practice-next").classList.remove("hidden");
   }
 
   function checkPractice() {
@@ -256,21 +266,20 @@
     const input = $("#practice-input").value;
     if (!input.trim()) return;
     const ok = isCorrect(input, practiceWord.finnish);
-    practiceChecked = true;
-    api.logAttempt(practiceWord.id, "sv_fi", ok);
-
     const fb = $("#practice-feedback");
     fb.classList.remove("hidden", "good", "bad");
-    fb.classList.add(ok ? "good" : "bad");
-    fb.textContent = ok ? "Rätt! 🎉" : "Nästan — rätt svar: " + practiceWord.finnish;
-
-    $("#practice-exercise").classList.add("hidden");
-    $("#practice-next").classList.remove("hidden");
-  }
-
-  function gradePractice(ok) {
-    api.logAttempt(practiceWord.id, "fi_sv", ok);
-    $("#practice-selfgrade").classList.add("hidden");
+    if (ok) {
+      practiceChecked = true;
+      api.logAttempt(practiceWord.id, "sv_fi", true);
+      fb.classList.add("good");
+      fb.textContent = "Rätt! 🎉";
+      $("#practice-exercise").classList.add("hidden");
+    } else {
+      api.logAttempt(practiceWord.id, "sv_fi", false);
+      fb.classList.add("bad");
+      fb.textContent = "Rätt svar: " + practiceWord.finnish;
+      $("#practice-input").select(); // retry directly
+    }
     $("#practice-next").classList.remove("hidden");
   }
 
@@ -332,6 +341,9 @@
     card.classList.toggle("revealed", modalRevealed);
     $("#modal-side").textContent = modalRevealed ? "Svenska" : "Finska";
     $("#modal-text").textContent = modalRevealed ? modalWord.swedish : modalWord.finnish;
+    const ex = modalRevealed ? modalWord.example : null;
+    $("#modal-example").classList.toggle("hidden", !ex);
+    if (ex) $("#modal-example").textContent = ex;
     $("#modal-hint").textContent = modalRevealed ? "" : T.tapToReveal;
   }
 
@@ -356,7 +368,8 @@
       const row = document.createElement("div");
       row.className = "word-row admin-row";
       const dateHtml = isQueue ? "" : `<span class="word-row-date">${esc(w.assigned_date)}</span>`;
-      row.innerHTML = `<span class="word-row-fi">${esc(w.finnish)}</span><span class="word-row-sep">→</span><span class="word-row-sv">${esc(w.swedish)}</span>${dateHtml}<button class="row-delete" title="Ta bort">×</button>`;
+      const exHtml = w.example ? `<span class="word-row-ex">${esc(w.example)}</span>` : "";
+      row.innerHTML = `<span class="row-text"><span class="word-row-fi">${esc(w.finnish)}</span><span class="word-row-sep">→</span><span class="word-row-sv">${esc(w.swedish)}</span>${exHtml}</span>${dateHtml}<button class="row-delete" title="Ta bort">×</button>`;
       row.querySelector(".row-delete").addEventListener("click", async () => {
         await api.deleteWord(w.id);
         renderAdmin();
@@ -369,12 +382,14 @@
     e.preventDefault();
     const finnish = $("#word-finnish").value.trim();
     const swedish = $("#word-swedish").value.trim();
+    const example = $("#word-ex").value.trim() || null;
     const date = $("#word-date").value || null;
     $("#admin-error").textContent = "";
     try {
-      await api.insertWord({ finnish, swedish, assigned_date: date, created_by: api.session.user.id });
+      await api.insertWord({ finnish, swedish, example, assigned_date: date, created_by: api.session.user.id });
       $("#word-finnish").value = "";
       $("#word-swedish").value = "";
+      $("#word-ex").value = "";
       $("#word-date").value = "";
       renderAdmin();
     } catch (err) {
@@ -549,7 +564,7 @@
   });
 
   // today
-  $("#word-card").addEventListener("click", revealToday);
+  $("#word-card").addEventListener("click", flipToday);
   $("#today-check").addEventListener("click", checkToday);
   $("#today-input").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); checkToday(); } });
 
@@ -557,8 +572,6 @@
   $("#practice-card").addEventListener("click", revealPractice);
   $("#practice-check").addEventListener("click", checkPractice);
   $("#practice-input").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); checkPractice(); } });
-  $("#grade-yes").addEventListener("click", () => gradePractice(true));
-  $("#grade-no").addEventListener("click", () => gradePractice(false));
   $("#practice-next").addEventListener("click", nextPractice);
 
   // history
