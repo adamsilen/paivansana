@@ -59,8 +59,8 @@ body::before {
   content: "";
   position: fixed; inset: 0;
   background:
-    radial-gradient(60% 40% at 85% -5%, var(--rose-tint) 0%, transparent 70%),
-    radial-gradient(70% 45% at 5% 100%, var(--sage-tint) 0%, transparent 65%);
+    radial-gradient(60% 40% at 85% -5%, var(--sage-tint) 0%, transparent 70%),
+    radial-gradient(70% 45% at 5% 100%, var(--butter-tint) 0%, transparent 65%);
   pointer-events: none;
   z-index: 0;
 }
