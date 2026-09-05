@@ -12,14 +12,14 @@ window.PS_I18N = {
 
   tabToday: "Idag",
   tabPractice: "Öva",
-  tabHistory: "Historik",
+  tabHistory: "Arkiv",
   tabAdmin: "Admin",
 
   todayEyebrow: "Dagens ord",
   loadingWord: "Hämtar dagens ord…",
   noWordToday: "Inget ord förberett för idag.",
 
-  historyTitle: "Historik",
+  historyTitle: "Arkisto",
   historySearch: "Sök ord…",
   sortNewest: "Nyast först",
   sortOldest: "Äldst först",
