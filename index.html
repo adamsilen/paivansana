@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>päivän sana</title>
+  <meta name="description" content="Ett finskt ord om dagen.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#FAF6EF">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/favicon-32.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Karla:wght@400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ── auth ─────────────────────────────────────────── -->
+    <section id="view-auth" class="view hidden">
+      <div class="auth-card">
+        <div class="brand">
+          <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="6"/>
+            <path d="M50 22v56M32 42l18-12 18 12" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h1>päivän sana</h1>
+        </div>
+        <p class="tagline">Ett finskt ord om dagen.</p>
+        <form id="auth-form">
+          <label class="field">
+            <span>E-post</span>
+            <input type="email" id="auth-email" autocomplete="email" required>
+          </label>
+          <label class="field">
+            <span>Lösenord</span>
+            <input type="password" id="auth-password" autocomplete="current-password" required minlength="6">
+          </label>
+          <p class="form-error" id="auth-error"></p>
+          <button type="submit" class="btn btn-primary" id="auth-submit">Logga in</button>
+        </form>
+        <button class="link-btn" id="auth-toggle">Inget konto? <strong>Skapa ett här</strong></button>
+      </div>
+    </section>
+
+    <!-- ── today ─────────────────────────────────────────── -->
+    <section id="view-today" class="view hidden">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Dagens ord</p>
+          <h2>I dag</h2>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" id="open-settings" type="button" aria-label="Inställningar">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div id="today-loading" class="word-card loading">
+        <div class="spinner" aria-label="Laddar"></div>
+        <p class="loading-text">Hämtar dagens ord…</p>
+      </div>
+
+      <button id="word-card" class="word-card hidden" type="button">
+        <span id="word-side" class="word-side"></span>
+        <span id="word-text" class="word-text"></span>
+        <span id="word-hint" class="word-hint">Tryck för att visa betydelsen</span>
+      </button>
+
+      <div id="today-exercise" class="exercise hidden">
+        <label class="field">
+          <span>Vad heter det på finska?</span>
+          <input type="text" id="today-input" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+        </label>
+        <button id="today-check" class="btn btn-primary" type="button">Rätta</button>
+        <p id="today-feedback" class="feedback hidden"></p>
+      </div>
+
+      <p id="today-done-note" class="done-note hidden">Dagens ord är klar — vi ses i morgon! 🌿</p>
+      <p id="today-empty" class="empty-note hidden">Inget ord i dag ännu — kön är tom.</p>
+    </section>
+
+    <!-- ── practice ─────────────────────────────────────────── -->
+    <section id="view-practice" class="view hidden">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Repetition</p>
+          <h2>Öva</h2>
+        </div>
+      </header>
+
+      <div id="practice-loading" class="word-card loading">
+        <div class="spinner" aria-label="Laddar"></div>
+        <p class="loading-text">Hämtar ord…</p>
+      </div>
+
+      <button id="practice-card" class="word-card hidden" type="button">
+        <span id="practice-side" class="word-side"></span>
+        <span id="practice-text" class="word-text"></span>
+        <span id="practice-answer-wrap" class="answer-wrap hidden">
+          <span class="answer-divider"></span>
+          <span id="practice-answer-side" class="word-side">Svenska</span>
+          <span id="practice-answer" class="word-text answer-text"></span>
+        </span>
+        <span id="practice-hint" class="word-hint"></span>
+      </button>
+
+      <div id="practice-exercise" class="exercise hidden">
+        <label class="field">
+          <span>Skriv det finska ordet</span>
+          <input type="text" id="practice-input" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+        </label>
+        <button id="practice-check" class="btn btn-primary" type="button">Rätta</button>
+      </div>
+
+      <p id="practice-feedback" class="feedback hidden"></p>
+
+      <div id="practice-selfgrade" class="selfgrade hidden">
+        <p class="selfgrade-q">Hade du rätt?</p>
+        <div class="selfgrade-btns">
+          <button id="grade-yes" class="btn btn-primary" type="button">Ja</button>
+          <button id="grade-no" class="btn btn-ghost" type="button">Nej</button>
+        </div>
+      </div>
+
+      <button id="practice-next" class="btn btn-ghost next-btn hidden" type="button">Nästa ord</button>
+      <p id="practice-empty" class="empty-note hidden">Inga gamla ord att öva på ännu — kom tillbaka i morgon!</p>
+    </section>
+
+    <!-- ── history ─────────────────────────────────────────── -->
+    <section id="view-history" class="view hidden">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Gamla ord</p>
+          <h2>Historik</h2>
+        </div>
+        <div class="topbar-actions">
+          <button id="history-sort" class="sort-toggle" aria-pressed="false">Nyast först</button>
+        </div>
+      </header>
+      <div class="search-row">
+        <input type="search" id="history-search" placeholder="Sök ord…" autocomplete="off">
+      </div>
+      <div id="history-list" class="cards"></div>
+      <p id="history-empty" class="empty-note hidden">Inga ord ännu.</p>
+    </section>
+
+    <!-- ── settings ──────────────────────────────────────── -->
+    <section id="view-settings" class="view hidden">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Inställningar</p>
+          <h2>Påminnelser</h2>
+        </div>
+      </header>
+      <div class="settings-card">
+        <label class="toggle-row">
+          <div>
+            <p class="toggle-title">Daglig påminnelse</p>
+            <p class="toggle-desc">Få dagens ord som en notis varje dag.</p>
+          </div>
+          <input type="checkbox" id="push-toggle" class="toggle">
+        </label>
+        <p id="push-note" class="settings-note hidden"></p>
+      </div>
+    </section>
+
+    <!-- ── admin ─────────────────────────────────────────── -->
+    <section id="view-admin" class="view hidden">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Admin</p>
+          <h2>Lägg till ord</h2>
+        </div>
+      </header>
+
+      <form id="add-word-form" class="admin-form">
+        <label class="field">
+          <span>Finska</span>
+          <input type="text" id="word-finnish" required autocomplete="off">
+        </label>
+        <label class="field">
+          <span>Svenska</span>
+          <input type="text" id="word-swedish" required autocomplete="off">
+        </label>
+        <label class="field">
+          <span>Datum <span class="field-opt">(valfritt — annars kö)</span></span>
+          <input type="date" id="word-date">
+        </label>
+        <p class="form-error" id="admin-error"></p>
+        <button type="submit" class="btn btn-primary">Lägg till</button>
+      </form>
+
+      <div class="admin-section">
+        <h3 class="admin-heading">Kö <span id="queue-count"></span></h3>
+        <div id="queue-list" class="cards"></div>
+        <p id="queue-empty" class="empty-note hidden">Kön är tom.</p>
+      </div>
+
+      <div class="admin-section">
+        <h3 class="admin-heading">Schemalagda</h3>
+        <div id="scheduled-list" class="cards"></div>
+        <p id="scheduled-empty" class="empty-note hidden">Inget schemalagt.</p>
+      </div>
+    </section>
+
+    <!-- ── word detail modal (history) ────────────────────── -->
+    <div id="word-modal" class="modal hidden">
+      <div class="modal-backdrop" id="modal-backdrop"></div>
+      <button id="modal-card" class="word-card modal-card" type="button">
+        <span id="modal-side" class="word-side">Finska</span>
+        <span id="modal-text" class="word-text"></span>
+        <span id="modal-hint" class="word-hint">Tryck för att visa betydelsen</span>
+      </button>
+      <button id="modal-close" class="icon-btn modal-close" type="button" aria-label="Stäng">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <!-- ── tabbar ─────────────────────────────────────────── -->
+    <nav id="tabbar" class="tabbar hidden">
+      <button data-tab="today" class="tab active">
+        <svg viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5M6.5 9.8V20h11V9.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>I dag</span>
+      </button>
+      <button data-tab="practice" class="tab">
+        <svg viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5L12 3z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg>
+        <span>Öva</span>
+      </button>
+      <button data-tab="history" class="tab">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+        <span>Historik</span>
+      </button>
+      <button data-tab="admin" class="tab hidden" id="tab-admin">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+        <span>Admin</span>
+      </button>
+      <button data-tab="signout" class="tab">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Logga ut</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

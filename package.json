@@ -1,0 +1,8 @@
+{
+  "name": "paivansana",
+  "private": true,
+  "description": "Ett finskt ord om dagen. Static PWA + Supabase (shared project with tidy/homey/leafy).",
+  "dependencies": {
+    "web-push": "^3.6.7"
+  }
+}
