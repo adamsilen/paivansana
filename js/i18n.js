@@ -10,7 +10,7 @@ window.PS_I18N = {
   haveAccount: "Har du redan ett konto?",
   signOut: "Logga ut",
 
-  tabToday: "Idag",
+  tabToday: "Dagens",
   tabPractice: "Öva",
   tabHistory: "Arkiv",
   tabAdmin: "Admin",
