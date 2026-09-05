@@ -1086,3 +1086,8 @@ h2 { font-size: 28px; }
 .pr-label { color: var(--ink-soft); font-weight: 600; flex: none; }
 .pr-value { font-weight: 700; color: var(--ink); overflow-wrap: break-word; }
 .practice-result.bad .practice-result-row:first-of-type .pr-value { color: var(--danger); }
+
+/* ── archive: add own word ─────────────────────────────── */
+.archive-add { margin-bottom: 14px; }
+.archive-add-btn { width: 100%; }
+.archive-add .admin-form { margin-top: 12px; }

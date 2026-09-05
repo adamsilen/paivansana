@@ -330,6 +330,29 @@
     $("#modal-hint").textContent = "";
   }
 
+  /* Own word (archive view): lands straight in the archive with today's
+     date — never in the queue — and joins the practice pool. */
+  async function addOwnWord(e) {
+    e.preventDefault();
+    const finnish = $("#own-finnish").value.trim();
+    const swedish = $("#own-swedish").value.trim();
+    const example_fi = $("#own-ex-fi").value.trim() || null;
+    const example_sv = $("#own-ex-sv").value.trim() || null;
+    $("#own-error").textContent = "";
+    try {
+      await api.insertWord({ finnish, swedish, example_fi, example_sv, assigned_date: api.todayISO(), created_by: api.session.user.id });
+      $("#own-finnish").value = "";
+      $("#own-swedish").value = "";
+      $("#own-ex-fi").value = "";
+      $("#own-ex-sv").value = "";
+      $("#archive-word-form").classList.add("hidden");
+      $("#archive-add-toggle").setAttribute("aria-expanded", "false");
+      renderHistory();
+    } catch (err) {
+      $("#own-error").textContent = err.message || T.errorGeneric;
+    }
+  }
+
   /* ════════════════════════ ADMIN ════════════════════════ */
   async function renderAdmin() {
     if (!api.isAdmin()) return;
@@ -596,6 +619,14 @@
 
   // admin
   $("#add-word-form").addEventListener("submit", addWord);
+  $("#archive-word-form").addEventListener("submit", addOwnWord);
+  $("#archive-add-toggle").addEventListener("click", () => {
+    const form = $("#archive-word-form");
+    const opening = form.classList.contains("hidden");
+    form.classList.toggle("hidden");
+    $("#archive-add-toggle").setAttribute("aria-expanded", String(opening));
+    if (opening) setTimeout(() => $("#own-finnish").focus(), 50);
+  });
 
   /* ── service worker (offline shell) ── */
   if ("serviceWorker" in navigator) {

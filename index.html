@@ -128,13 +128,37 @@
     <section id="view-history" class="view hidden">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Gamla ord</p>
-          <h2>Historik</h2>
+          <p class="eyebrow">Arkiv</p>
+          <h2>Arkisto</h2>
         </div>
         <div class="topbar-actions">
           <button id="history-sort" class="sort-toggle" aria-pressed="false">Nyast först</button>
         </div>
       </header>
+      <div class="archive-add">
+        <button id="archive-add-toggle" class="btn btn-ghost archive-add-btn" type="button" aria-expanded="false">+ Lägg till eget ord</button>
+        <form id="archive-word-form" class="admin-form hidden">
+          <label class="field">
+            <span>Finska</span>
+            <input type="text" id="own-finnish" required autocomplete="off">
+          </label>
+          <label class="field">
+            <span>Extra (finska) <span class="field-opt">(valfritt)</span></span>
+            <input type="text" id="own-ex-fi" autocomplete="off">
+          </label>
+          <label class="field">
+            <span>Svenska</span>
+            <input type="text" id="own-swedish" required autocomplete="off">
+          </label>
+          <label class="field">
+            <span>Extra (svenska) <span class="field-opt">(valfritt)</span></span>
+            <input type="text" id="own-ex-sv" autocomplete="off">
+          </label>
+          <p class="form-error" id="own-error"></p>
+          <button type="submit" class="btn btn-primary">Lägg till</button>
+        </form>
+      </div>
+
       <label class="search-field">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16.5 16.5 4.2 4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <input id="history-search" type="search" placeholder="Sök ord…" autocomplete="off">
@@ -239,7 +263,7 @@
       </button>
       <button data-tab="history" class="tab">
         <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
-        <span>Historik</span>
+        <span>Arkiv</span>
       </button>
       <button data-tab="more" class="tab">
         <svg viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="18.5" cy="12" r="1.7" fill="currentColor"/></svg>
