@@ -111,7 +111,13 @@
         <button id="practice-check" class="btn btn-primary" type="button">Rätta</button>
       </div>
 
-      <p id="practice-feedback" class="feedback hidden"></p>
+      <div id="practice-feedback" class="practice-result hidden">
+        <p class="practice-result-verdict"></p>
+        <div class="practice-result-rows">
+          <div class="practice-result-row"><span class="pr-label">Du svarade</span><span class="pr-value"></span></div>
+          <div class="practice-result-row"><span class="pr-label">Rätt svar</span><span class="pr-value"></span></div>
+        </div>
+      </div>
 
       <button id="practice-next" class="btn btn-ghost next-btn hidden" type="button">Nästa ord</button>
       <p id="practice-empty" class="empty-note hidden">Inga gamla ord att öva på ännu — kom tillbaka i morgon!</p>
@@ -128,9 +134,13 @@
           <button id="history-sort" class="sort-toggle" aria-pressed="false">Nyast först</button>
         </div>
       </header>
-      <div class="search-row">
-        <input type="search" id="history-search" placeholder="Sök ord…" autocomplete="off">
-      </div>
+      <label class="search-field">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16.5 16.5 4.2 4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="history-search" type="search" placeholder="Sök ord…" autocomplete="off">
+        <button id="history-search-clear" type="button" class="search-clear hidden" aria-label="Rensa sök">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </button>
+      </label>
       <div id="history-list" class="cards"></div>
       <p id="history-empty" class="empty-note hidden">Inga ord ännu.</p>
     </section>

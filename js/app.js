@@ -239,18 +239,20 @@
     const input = $("#practice-input").value;
     if (!input.trim()) return;
     const ok = isCorrect(input, practiceWord.finnish);
+    api.logAttempt(practiceWord.id, "sv_fi", ok);
+
     const fb = $("#practice-feedback");
     fb.classList.remove("hidden", "good", "bad");
+    fb.classList.add(ok ? "good" : "bad");
+    fb.querySelector(".practice-result-verdict").textContent = ok ? "Rätt! 🎉" : "Inte riktigt";
+    const rows = fb.querySelectorAll(".practice-result-row .pr-value");
+    rows[0].textContent = input.trim();
+    rows[1].textContent = practiceWord.finnish;
+
     if (ok) {
       practiceChecked = true;
-      api.logAttempt(practiceWord.id, "sv_fi", true);
-      fb.classList.add("good");
-      fb.textContent = "Rätt! 🎉";
       $("#practice-exercise").classList.add("hidden");
     } else {
-      api.logAttempt(practiceWord.id, "sv_fi", false);
-      fb.classList.add("bad");
-      fb.textContent = "Rätt svar: " + practiceWord.finnish;
       $("#practice-input").select(); // retry directly
     }
     $("#practice-next").classList.remove("hidden");
@@ -275,7 +277,9 @@
 
     const el = $("#history-list");
     el.innerHTML = "";
-    $("#history-empty").classList.toggle("hidden", list.length > 0);
+    const empty = $("#history-empty");
+    empty.textContent = q ? `Inget ord matchar “${$("#history-search").value.trim()}”.` : "Inga ord ännu.";
+    empty.classList.toggle("hidden", list.length > 0);
 
     list.forEach((w) => {
       const btn = document.createElement("button");
@@ -547,7 +551,16 @@
 
   // history
   $("#history-sort").addEventListener("click", cycleSort);
-  $("#history-search").addEventListener("input", renderHistoryList);
+  const historySearch = $("#history-search");
+  const historyClear = $("#history-search-clear");
+  const syncHistoryClear = () => historyClear.classList.toggle("hidden", historySearch.value.length === 0);
+  historySearch.addEventListener("input", () => { syncHistoryClear(); renderHistoryList(); });
+  historyClear.addEventListener("click", () => {
+    historySearch.value = "";
+    syncHistoryClear();
+    renderHistoryList();
+    historySearch.focus();
+  });
 
   // modal
   $("#modal-card").addEventListener("click", () => { modalRevealed = !modalRevealed; renderModal(); });
