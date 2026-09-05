@@ -173,21 +173,30 @@
         with tidy's push_subscriptions in the same project) ── */
   api.fetchSubscriptions = () => request(REST + "/ps_push_subscriptions?select=id,endpoint");
 
-  api.saveSubscription = (sub) =>
-    request(REST + "/ps_push_subscriptions", {
+  api.saveSubscription = (sub) => {
+    // Safari/iOS doesn't expose sub.keys — read the raw key bytes instead.
+    const key = sub.getKey ? sub.getKey("p256dh") : null;
+    const auth = sub.getKey ? sub.getKey("auth") : null;
+    if (!key || !auth) return Promise.reject(new Error("Kunde inte läsa prenumerationens nycklar."));
+    return request(REST + "/ps_push_subscriptions", {
       method: "POST",
       headers: { Prefer: "resolution=merge-duplicates,return=representation" },
       body: JSON.stringify({
         user_id: api.session.user.id,
         endpoint: sub.endpoint,
-        p256dh: sub.keys.p256dh,
-        auth: sub.keys.auth,
+        p256dh: uint8ToB64(key),
+        auth: uint8ToB64(auth),
         user_agent: (navigator.userAgent || "").slice(0, 200),
       }),
     });
+  };
 
   api.deleteSubscription = (endpoint) =>
     request(REST + "/ps_push_subscriptions?endpoint=eq." + encodeURIComponent(endpoint), { method: "DELETE" });
+
+  function uint8ToB64(buf) {
+    return btoa(String.fromCharCode(...new Uint8Array(buf)));
+  }
 
   /* ── helpers ── */
   function todayISO() {

@@ -62,6 +62,16 @@
         <span id="word-hint" class="word-hint">Tryck för att visa betydelsen</span>
       </button>
 
+      <div id="today-exercise" class="exercise hidden">
+        <label class="field">
+          <span>Vad heter det på finska?</span>
+          <input type="text" id="today-input" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+        </label>
+        <button id="today-check" class="btn btn-primary" type="button">Rätta</button>
+      </div>
+
+      <p id="today-feedback" class="feedback hidden"></p>
+
       <div id="push-onboarding" class="onboarding-card hidden">
         <div class="onboarding-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
@@ -73,16 +83,6 @@
           <button id="push-dismiss" class="btn btn-ghost" type="button">Inte nu</button>
         </div>
       </div>
-
-      <div id="today-exercise" class="exercise hidden">
-        <label class="field">
-          <span>Vad heter det på finska?</span>
-          <input type="text" id="today-input" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
-        </label>
-        <button id="today-check" class="btn btn-primary" type="button">Rätta</button>
-      </div>
-
-      <p id="today-feedback" class="feedback hidden"></p>
 
       <p id="today-empty" class="empty-note hidden">Inget ord förberett för idag.</p>
     </section>
