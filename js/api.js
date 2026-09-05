@@ -35,7 +35,11 @@
     });
     if (!res.ok) {
       let msg = res.status + " " + res.statusText;
-      try { const j = await res.json(); msg = j.msg || j.message || j.error_description || msg; } catch {}
+      try {
+        const j = await res.json();
+        msg = j.msg || j.message || j.error_description || msg;
+        if (/words_finnish_swedish_key/.test(msg)) msg = "Ordet finns redan eller är schemalagt till en kommande dag.";
+      } catch {}
       const err = new Error(msg);
       err.status = res.status;
       throw err;
@@ -131,7 +135,7 @@
 
   // History: words whose date has passed (or is today)
   api.fetchHistory = () =>
-    request(REST + "/words?assigned_date=not.is.null&select=id,finnish,swedish,example_sv,example_fi,assigned_date&order=assigned_date.desc");
+    request(REST + "/words?assigned_date=lte." + todayISO() + "&select=id,finnish,swedish,example_sv,example_fi,assigned_date&order=assigned_date.desc");
 
   /* ── admin ── */
   api.fetchQueue = () =>
