@@ -2,7 +2,7 @@
    Same-origin shell: network-first, cache = offline fallback.
    Fonts/CDN: stale-while-revalidate. Supabase API: never intercepted.
 */
-const CACHE = 'ps-shell-v2';
+const CACHE = 'ps-shell-v3';
 const PRECACHE = [
   './index.html',
   './css/style.css',

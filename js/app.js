@@ -390,6 +390,29 @@
     }
   }
 
+  /* Own word (archive view): lands straight in the archive with today's
+     date — never in the queue — and joins the practice pool. */
+  async function addOwnWord(e) {
+    e.preventDefault();
+    const finnish = $("#own-finnish").value.trim();
+    const swedish = $("#own-swedish").value.trim();
+    const example_fi = $("#own-ex-fi").value.trim() || null;
+    const example_sv = $("#own-ex-sv").value.trim() || null;
+    $("#own-error").textContent = "";
+    try {
+      await api.insertWord({ finnish, swedish, example_fi, example_sv, assigned_date: api.todayISO(), created_by: api.session.user.id });
+      $("#own-finnish").value = "";
+      $("#own-swedish").value = "";
+      $("#own-ex-fi").value = "";
+      $("#own-ex-sv").value = "";
+      $("#archive-word-form").classList.add("hidden");
+      $("#archive-add-toggle").setAttribute("aria-expanded", "false");
+      renderHistory();
+    } catch (err) {
+      $("#own-error").textContent = err.message || T.errorGeneric;
+    }
+  }
+
   /* ════════════════════════ ADMIN ════════════════════════ */
   async function renderAdmin() {
     if (!api.isAdmin()) return;
