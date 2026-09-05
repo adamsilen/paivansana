@@ -249,11 +249,14 @@
       <button id="modal-close" class="icon-btn modal-close" type="button" aria-label="Stäng">
         <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
       </button>
-      <button id="modal-edit" class="icon-btn modal-edit" type="button" aria-label="Redigera">
-        <svg viewBox="0 0 24 24"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg>
-      </button>
+    </div>
 
-      <form id="modal-edit-form" class="admin-form modal-edit-form hidden">
+    <!-- ── edit word sheet ────────────────────────────────── -->
+    <div id="edit-backdrop" class="sheet-backdrop hidden"></div>
+    <div id="edit-sheet" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="edit-sheet-title">
+      <div class="sheet-grab" aria-hidden="true"></div>
+      <h3 id="edit-sheet-title">Redigera ord</h3>
+      <form id="edit-word-form" class="admin-form">
         <label class="field">
           <span>Finska</span>
           <input type="text" id="edit-finnish" required autocomplete="off">
@@ -275,7 +278,7 @@
           <input type="date" id="edit-date">
         </label>
         <p class="form-error" id="edit-error"></p>
-        <div class="edit-btns">
+        <div class="sheet-actions">
           <button type="submit" class="btn btn-primary">Spara</button>
           <button type="button" id="edit-cancel" class="btn btn-ghost">Avbryt</button>
         </div>

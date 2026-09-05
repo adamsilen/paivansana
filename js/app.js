@@ -288,12 +288,12 @@
     empty.classList.toggle("hidden", list.length > 0);
 
     list.forEach((w) => {
-      const btn = document.createElement("button");
-      btn.className = "word-row";
-      btn.type = "button";
-      btn.innerHTML = `<span class="word-row-fi">${esc(w.finnish)}</span><span class="word-row-sep">→</span><span class="word-row-sv">${esc(w.swedish)}</span>`;
-      btn.addEventListener("click", () => openModal(w));
-      el.appendChild(btn);
+      const row = document.createElement("div");
+      row.className = "word-row";
+      row.innerHTML = `<button class="word-row-main" type="button"><span class="word-row-fi">${esc(w.finnish)}</span><span class="word-row-sep">→</span><span class="word-row-sv">${esc(w.swedish)}</span></button><button class="row-edit" title="Redigera" aria-label="Redigera"><svg viewBox="0 0 24 24"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg></button>`;
+      row.querySelector(".word-row-main").addEventListener("click", () => openModal(w));
+      row.querySelector(".row-edit").addEventListener("click", () => openEditSheet(w, "history"));
+      el.appendChild(row);
     });
   }
 
@@ -313,104 +313,70 @@
     modalWord = w;
     modalContext = context || "history"; // "history" | "admin"
     modalRevealed = false;
-    exitEditMode();
     renderModal();
     $("#word-modal").classList.remove("hidden");
   }
   function closeModal() {
     $("#word-modal").classList.add("hidden");
     modalWord = null;
-    exitEditMode();
   }
 
-  function enterEditMode() {
-    if (!modalWord) return;
-    $("#edit-finnish").value = modalWord.finnish;
-    $("#edit-swedish").value = modalWord.swedish;
-    $("#edit-ex-fi").value = modalWord.example_fi || "";
-    $("#edit-ex-sv").value = modalWord.example_sv || "";
+  /* ── edit sheet (shared by archive + admin) ── */
+  let editWord = null, editContext = "history";
+
+  function openEditSheet(w, context) {
+    editWord = w;
+    editContext = context || "history";
+    $("#edit-finnish").value = w.finnish;
+    $("#edit-swedish").value = w.swedish;
+    $("#edit-ex-fi").value = w.example_fi || "";
+    $("#edit-ex-sv").value = w.example_sv || "";
     // scheduling only editable from admin
-    $("#edit-date-wrap").classList.toggle("hidden", modalContext !== "admin");
-    $("#edit-date").value = modalWord.assigned_date || "";
+    $("#edit-date-wrap").classList.toggle("hidden", editContext !== "admin");
+    $("#edit-date").value = w.assigned_date || "";
     $("#edit-error").textContent = "";
-    $("#modal-card").classList.add("hidden");
-    $("#modal-edit").classList.add("hidden");
-    $("#modal-edit-form").classList.remove("hidden");
+    $("#edit-backdrop").classList.remove("hidden");
+    $("#edit-sheet").classList.remove("hidden");
   }
-  function exitEditMode() {
-    $("#modal-edit-form").classList.add("hidden");
-    $("#modal-card").classList.remove("hidden");
-    $("#modal-edit").classList.remove("hidden");
+  function closeEditSheet() {
+    $("#edit-sheet").classList.add("hidden");
+    $("#edit-backdrop").classList.add("hidden");
+    editWord = null;
   }
-  function refreshModalSource() {
-    if (modalContext === "admin") renderAdmin();
+  function refreshEditSource() {
+    if (editContext === "admin") renderAdmin();
     else renderHistory();
   }
 
   async function saveWordEdit(e) {
     e.preventDefault();
-    if (!modalWord) return;
+    if (!editWord) return;
     const patch = {
       finnish: $("#edit-finnish").value.trim(),
       swedish: $("#edit-swedish").value.trim(),
       example_fi: $("#edit-ex-fi").value.trim() || null,
       example_sv: $("#edit-ex-sv").value.trim() || null,
     };
-    if (modalContext === "admin") patch.assigned_date = $("#edit-date").value || null;
+    if (editContext === "admin") patch.assigned_date = $("#edit-date").value || null;
     $("#edit-error").textContent = "";
     try {
-      await api.updateWord(modalWord.id, patch);
-      Object.assign(modalWord, patch);
-      exitEditMode();
-      renderModal();
-      refreshModalSource();
+      await api.updateWord(editWord.id, patch);
+      closeEditSheet();
+      refreshEditSource();
     } catch (err) {
       $("#edit-error").textContent = err.message || T.errorGeneric;
     }
   }
 
-  async function deleteWordFromModal() {
-    if (!modalWord) return;
-    if (!confirm("Ta bort \u201D" + modalWord.finnish + "\u201D permanent?")) return;
+  async function deleteWordFromSheet() {
+    if (!editWord) return;
+    if (!confirm("Ta bort \u201D" + editWord.finnish + "\u201D permanent?")) return;
     try {
-      await api.deleteWord(modalWord.id);
-      closeModal();
-      refreshModalSource();
+      await api.deleteWord(editWord.id);
+      closeEditSheet();
+      refreshEditSource();
     } catch (err) {
       $("#edit-error").textContent = err.message || T.errorGeneric;
-    }
-  }
-  function renderModal() {
-    const card = $("#modal-card");
-    card.classList.toggle("revealed", modalRevealed);
-    $("#modal-side").textContent = modalRevealed ? "Svenska" : "Finska";
-    $("#modal-text").textContent = modalRevealed ? modalWord.swedish : modalWord.finnish;
-    const ex = modalRevealed ? modalWord.example_sv : modalWord.example_fi;
-    $("#modal-example").classList.toggle("hidden", !ex);
-    if (ex) $("#modal-example").textContent = ex;
-    $("#modal-hint").textContent = "";
-  }
-
-  /* Own word (archive view): lands straight in the archive with today's
-     date — never in the queue — and joins the practice pool. */
-  async function addOwnWord(e) {
-    e.preventDefault();
-    const finnish = $("#own-finnish").value.trim();
-    const swedish = $("#own-swedish").value.trim();
-    const example_fi = $("#own-ex-fi").value.trim() || null;
-    const example_sv = $("#own-ex-sv").value.trim() || null;
-    $("#own-error").textContent = "";
-    try {
-      await api.insertWord({ finnish, swedish, example_fi, example_sv, assigned_date: api.todayISO(), created_by: api.session.user.id });
-      $("#own-finnish").value = "";
-      $("#own-swedish").value = "";
-      $("#own-ex-fi").value = "";
-      $("#own-ex-sv").value = "";
-      $("#archive-word-form").classList.add("hidden");
-      $("#archive-add-toggle").setAttribute("aria-expanded", "false");
-      renderHistory();
-    } catch (err) {
-      $("#own-error").textContent = err.message || T.errorGeneric;
     }
   }
 
@@ -438,7 +404,7 @@
       const exParts = [w.example_sv, w.example_fi].filter(Boolean);
       const exHtml = exParts.length ? `<span class="word-row-ex">${exParts.map(esc).join(" · ")}</span>` : "";
       row.innerHTML = `<span class="row-text"><span class="word-row-fi">${esc(w.finnish)}</span><span class="word-row-sep">→</span><span class="word-row-sv">${esc(w.swedish)}</span>${exHtml}</span>${dateHtml}<button class="row-edit" title="Redigera" aria-label="Redigera"><svg viewBox="0 0 24 24"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg></button>`;
-      row.querySelector(".row-edit").addEventListener("click", () => openModal(w, "admin"));
+      row.querySelector(".row-edit").addEventListener("click", () => openEditSheet(w, "admin"));
       el.appendChild(row);
     });
   }
@@ -656,10 +622,10 @@
   $("#modal-card").addEventListener("click", () => { modalRevealed = !modalRevealed; renderModal(); });
   $("#modal-close").addEventListener("click", closeModal);
   $("#modal-backdrop").addEventListener("click", closeModal);
-  $("#modal-edit").addEventListener("click", enterEditMode);
-  $("#edit-cancel").addEventListener("click", exitEditMode);
-  $("#modal-edit-form").addEventListener("submit", saveWordEdit);
-  $("#edit-delete").addEventListener("click", deleteWordFromModal);
+  $("#edit-cancel").addEventListener("click", closeEditSheet);
+  $("#edit-backdrop").addEventListener("click", closeEditSheet);
+  $("#edit-word-form").addEventListener("submit", saveWordEdit);
+  $("#edit-delete").addEventListener("click", deleteWordFromSheet);
 
   // Mer menu + settings + push onboarding
   $("#more-menu").addEventListener("click", (e) => {
