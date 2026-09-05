@@ -239,7 +239,11 @@
     const input = $("#practice-input").value;
     if (!input.trim()) return;
     const ok = isCorrect(input, practiceWord.finnish);
+    practiceChecked = true;
     api.logAttempt(practiceWord.id, "sv_fi", ok);
+
+    // the exercise is done — show the result instead
+    $("#practice-exercise").classList.add("hidden");
 
     const fb = $("#practice-feedback");
     fb.classList.remove("hidden", "good", "bad");
@@ -249,12 +253,6 @@
     rows[0].textContent = input.trim();
     rows[1].textContent = practiceWord.finnish;
 
-    if (ok) {
-      practiceChecked = true;
-      $("#practice-exercise").classList.add("hidden");
-    } else {
-      $("#practice-input").select(); // retry directly
-    }
     $("#practice-next").classList.remove("hidden");
   }
 
