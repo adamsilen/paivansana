@@ -930,7 +930,7 @@ h2 { font-size: 28px; }
   background: var(--line);
   margin: 8px 0;
 }
-.answer-text { font-size: 26px; }
+.answer-text { font-size: 34px; }
 
 .selfgrade { margin-top: 14px; text-align: center; }
 .selfgrade-q { font-size: 14px; color: var(--ink-soft); margin-bottom: 10px; }

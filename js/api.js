@@ -135,7 +135,7 @@
 
   // History: words whose date has passed (or is today)
   api.fetchHistory = () =>
-    request(REST + "/words?assigned_date=lte." + todayISO() + "&select=id,finnish,swedish,example_sv,example_fi,assigned_date&order=assigned_date.desc");
+    request(REST + "/words?assigned_date=lte." + todayISO() + "&select=id,finnish,swedish,example_sv,example_fi,assigned_date,created_at&order=assigned_date.desc");
 
   /* ── admin ── */
   api.fetchQueue = () =>

@@ -288,8 +288,12 @@
     let list = historyWords.filter((w) =>
       w.finnish.toLowerCase().includes(q) || w.swedish.toLowerCase().includes(q));
 
-    if (sortMode === "oldest") list = [...list].sort((a, b) => a.assigned_date.localeCompare(b.assigned_date));
-    else if (sortMode === "newest") list = [...list].sort((a, b) => b.assigned_date.localeCompare(a.assigned_date));
+    const byNewest = (a, b) =>
+      b.assigned_date.localeCompare(a.assigned_date) || (b.created_at || "").localeCompare(a.created_at || "");
+    const byOldest = (a, b) =>
+      a.assigned_date.localeCompare(b.assigned_date) || (a.created_at || "").localeCompare(b.created_at || "");
+    if (sortMode === "oldest") list = [...list].sort(byOldest);
+    else if (sortMode === "newest") list = [...list].sort(byNewest);
     else if (sortMode === "az") list = [...list].sort((a, b) => a.finnish.localeCompare(b.finnish, "sv"));
 
     const el = $("#history-list");
@@ -418,6 +422,7 @@
       $("#own-ex-sv").value = "";
       $("#archive-word-form").classList.add("hidden");
       $("#archive-add-toggle").setAttribute("aria-expanded", "false");
+      $("#archive-add-toggle").textContent = "+ Lägg till eget ord";
       renderHistory();
     } catch (err) {
       $("#own-error").textContent = err.message || T.errorGeneric;
@@ -694,9 +699,11 @@
   $("#archive-word-form").addEventListener("submit", addOwnWord);
   $("#archive-add-toggle").addEventListener("click", () => {
     const form = $("#archive-word-form");
+    const toggle = $("#archive-add-toggle");
     const opening = form.classList.contains("hidden");
     form.classList.toggle("hidden");
-    $("#archive-add-toggle").setAttribute("aria-expanded", String(opening));
+    toggle.setAttribute("aria-expanded", String(opening));
+    toggle.textContent = opening ? "✕ Avbryt" : "+ Lägg till eget ord";
     if (opening) setTimeout(() => $("#own-finnish").focus(), 50);
   });
 
