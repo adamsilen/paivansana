@@ -12,6 +12,10 @@
   --sage:       #6B93B8;
   --sage-soft:  #D4E2ED;
   --sage-tint:  #EDF3F8;
+
+  /* semantic — correct answers stay green regardless of branding */
+  --good:       #3F9160;
+  --good-tint:  #E6F2EA;
   --rose:       #D9A5A0;
   --rose-tint:  #F7E9E6;
   --butter:     #E9D8A6;
@@ -1080,12 +1084,12 @@ h2 { font-size: 28px; }
   text-align: left;
 }
 .practice-result.hidden { display: none; }
-.practice-result.good { background: var(--sage-tint); }
+.practice-result.good { background: var(--good-tint); }
 .practice-result.bad  { background: var(--rose-tint); }
 .practice-result-verdict {
   font-weight: 700; font-size: 15px; margin: 0 0 8px;
 }
-.practice-result.good .practice-result-verdict { color: var(--sage); }
+.practice-result.good .practice-result-verdict { color: var(--good); }
 .practice-result.bad  .practice-result-verdict { color: var(--danger); }
 .practice-result-row {
   display: flex; align-items: baseline; gap: 12px;
