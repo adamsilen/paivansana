@@ -10,7 +10,7 @@ window.PS_I18N = {
   haveAccount: "Har du redan ett konto?",
   signOut: "Logga ut",
 
-  tabToday: "I dag",
+  tabToday: "Idag",
   tabPractice: "Öva",
   tabHistory: "Historik",
   tabAdmin: "Admin",
@@ -18,7 +18,7 @@ window.PS_I18N = {
   todayEyebrow: "Dagens ord",
   loadingWord: "Hämtar dagens ord…",
   tapToReveal: "Tryck för att visa betydelsen",
-  noWordToday: "Inget ord i dag ännu — kön är tom.",
+  noWordToday: "Inget ord förberett för idag.",
 
   historyTitle: "Historik",
   historySearch: "Sök ord…",

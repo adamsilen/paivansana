@@ -8,6 +8,7 @@
   const api = window.PsAPI;
 
   let authMode = "signin";
+  let currentTab = "today";
   let historyWords = [];
   let sortMode = "newest";
 
@@ -34,9 +35,28 @@
     if (el) el.classList.remove("hidden");
   }
 
+  const MORE_VIEWS = ["settings", "admin"]; // views reached via the Mer menu
+
+  function closeMoreMenu() {
+    $("#more-menu").classList.add("hidden");
+  }
+
+  function openMoreMenu() {
+    const menu = $("#more-menu");
+    const anchor = document.querySelector('#tabbar [data-tab="more"]');
+    menu.classList.remove("hidden");
+    const r = anchor.getBoundingClientRect();
+    menu.style.left = Math.max(12, Math.min(r.right - 200, window.innerWidth - 212)) + "px";
+    menu.style.top = (r.top - menu.offsetHeight - 10) + "px";
+  }
+
   function switchTab(tab) {
+    closeMoreMenu();
     if (tab === "signout") { doSignOut(); return; }
-    $$("#tabbar .tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === tab));
+    if (tab === "more") { openMoreMenu(); return; } // menu, not a page
+    currentTab = tab;
+    const activeTab = MORE_VIEWS.includes(tab) ? "more" : tab;
+    $$("#tabbar .tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === activeTab));
     if (tab === "today") { showView("today"); loadToday(); }
     if (tab === "practice") { showView("practice"); loadPractice(); }
     if (tab === "history") { showView("history"); renderHistory(); }
@@ -72,6 +92,7 @@
   }
 
   function doSignOut() {
+    closeMoreMenu();
     api.signOut();
     $$("#tabbar .tab").forEach((t) => t.classList.remove("active"));
     renderAuth();
@@ -79,7 +100,7 @@
 
   function enterApp() {
     $("#tabbar").classList.remove("hidden");
-    $("#tab-admin").classList.toggle("hidden", !api.isAdmin());
+    $("#more-admin").classList.toggle("hidden", !api.isAdmin());
     switchTab("today");
   }
 
@@ -97,7 +118,6 @@
     $("#word-card").classList.add("hidden");
     $("#today-exercise").classList.add("hidden");
     $("#today-feedback").classList.add("hidden");
-    $("#today-done-note").classList.add("hidden");
     $("#today-empty").classList.add("hidden");
     $("#push-onboarding").classList.add("hidden");
 
@@ -156,7 +176,6 @@
     fb.textContent = ok ? "Rätt! 🎉" : "Nästan — rätt svar: " + todayWord.finnish;
 
     $("#today-exercise").classList.add("hidden");
-    $("#today-done-note").classList.remove("hidden");
   }
 
   /* ════════════════════════ PRACTICE ════════════════════════ */
@@ -516,7 +535,17 @@
   });
   $("#tabbar").addEventListener("click", (e) => {
     const t = e.target.closest(".tab");
-    if (t) switchTab(t.dataset.tab);
+    if (!t) return;
+    if (t.dataset.tab === "more" && !$("#more-menu").classList.contains("hidden")) {
+      closeMoreMenu();
+      const back = MORE_VIEWS.includes(currentTab) ? "more" : currentTab;
+      $$("#tabbar .tab").forEach((x) => x.classList.toggle("active", x.dataset.tab === back));
+      return;
+    }
+    if (t.dataset.tab === "more") {
+      $$("#tabbar .tab").forEach((x) => x.classList.toggle("active", x.dataset.tab === "more"));
+    }
+    switchTab(t.dataset.tab);
   });
 
   // today
@@ -541,8 +570,20 @@
   $("#modal-close").addEventListener("click", closeModal);
   $("#modal-backdrop").addEventListener("click", closeModal);
 
-  // settings + push onboarding
-  $("#open-settings").addEventListener("click", () => switchTab("settings"));
+  // Mer menu + settings + push onboarding
+  $("#more-menu").addEventListener("click", (e) => {
+    const nav = e.target.closest("[data-nav]");
+    if (nav) switchTab(nav.dataset.nav);
+  });
+  document.addEventListener("click", (e) => {
+    // close the Mer menu when tapping anywhere outside it / its tab
+    if (!$("#more-menu").classList.contains("hidden") &&
+        !e.target.closest("#more-menu") && !e.target.closest('[data-tab="more"]')) {
+      closeMoreMenu();
+      const back = MORE_VIEWS.includes(currentTab) ? "more" : currentTab;
+      $$("#tabbar .tab").forEach((x) => x.classList.toggle("active", x.dataset.tab === back));
+    }
+  });
   $("#push-toggle").addEventListener("change", togglePush);
   $("#push-optin").addEventListener("click", optInPush);
   $("#push-dismiss").addEventListener("click", dismissPushOnboarding);

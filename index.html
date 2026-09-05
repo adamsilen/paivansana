@@ -46,12 +46,7 @@
       <header class="topbar">
         <div>
           <p class="eyebrow">Dagens ord</p>
-          <h2>I dag</h2>
-        </div>
-        <div class="topbar-actions">
-          <button class="icon-btn" id="open-settings" type="button" aria-label="Inställningar">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-          </button>
+          <h2>Päivän sana</h2>
         </div>
       </header>
 
@@ -87,8 +82,7 @@
         <p id="today-feedback" class="feedback hidden"></p>
       </div>
 
-      <p id="today-done-note" class="done-note hidden">Dagens ord är klar — vi ses i morgon! 🌿</p>
-      <p id="today-empty" class="empty-note hidden">Inget ord i dag ännu — kön är tom.</p>
+      <p id="today-empty" class="empty-note hidden">Inget ord förberett för idag.</p>
     </section>
 
     <!-- ── practice ─────────────────────────────────────────── -->
@@ -160,8 +154,8 @@
     <section id="view-settings" class="view hidden">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Inställningar</p>
-          <h2>Påminnelser</h2>
+          <p class="eyebrow">App</p>
+          <h2>Inställningar</h2>
         </div>
       </header>
       <div class="settings-card">
@@ -231,8 +225,8 @@
     <!-- ── tabbar ─────────────────────────────────────────── -->
     <nav id="tabbar" class="tabbar hidden">
       <button data-tab="today" class="tab active">
-        <svg viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5M6.5 9.8V20h11V9.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span>I dag</span>
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M19.1 4.9l-1.6 1.6M6.5 17.5l-1.6 1.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+        <span>Idag</span>
       </button>
       <button data-tab="practice" class="tab">
         <svg viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5L12 3z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg>
@@ -242,15 +236,27 @@
         <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
         <span>Historik</span>
       </button>
-      <button data-tab="admin" class="tab hidden" id="tab-admin">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
-        <span>Admin</span>
-      </button>
-      <button data-tab="signout" class="tab">
-        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span>Logga ut</span>
+      <button data-tab="more" class="tab">
+        <svg viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="18.5" cy="12" r="1.7" fill="currentColor"/></svg>
+        <span>Mer</span>
       </button>
     </nav>
+
+    <!-- ── more menu (popover above the Mer tab) ──────────── -->
+    <div id="more-menu" class="popover-menu hidden">
+      <button data-nav="admin" id="more-admin" class="hidden">
+        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Admin
+      </button>
+      <button data-nav="settings">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Inställningar
+      </button>
+      <button data-nav="signout" class="danger">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Logga ut
+      </button>
+    </div>
 
   </div>
 
