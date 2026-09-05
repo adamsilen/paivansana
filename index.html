@@ -59,7 +59,7 @@
         <span id="word-side" class="word-side"></span>
         <span id="word-text" class="word-text"></span>
         <span id="word-example" class="word-example hidden"></span>
-        <span id="word-hint" class="word-hint">Tryck för att visa betydelsen</span>
+        <span id="word-hint" class="word-hint"></span>
       </button>
 
       <div id="push-onboarding" class="onboarding-card hidden">
@@ -94,6 +94,7 @@
       <button id="practice-card" class="word-card hidden" type="button">
         <span id="practice-side" class="word-side"></span>
         <span id="practice-text" class="word-text"></span>
+        <span id="practice-example-fi" class="word-example hidden"></span>
         <span id="practice-answer-wrap" class="answer-wrap hidden">
           <span class="answer-divider"></span>
           <span id="practice-answer-side" class="word-side">Svenska</span>
@@ -184,8 +185,12 @@
           <input type="text" id="word-swedish" required autocomplete="off">
         </label>
         <label class="field">
-          <span>Exempel eller info <span class="field-opt">(valfritt)</span></span>
-          <input type="text" id="word-ex" autocomplete="off" placeholder="T.ex. en exempelmening">
+          <span>Exempel eller info — svenska sidan <span class="field-opt">(valfritt)</span></span>
+          <input type="text" id="word-ex-sv" autocomplete="off" placeholder="Visas på den svenska sidan">
+        </label>
+        <label class="field">
+          <span>Exempel eller info — finska sidan <span class="field-opt">(valfritt)</span></span>
+          <input type="text" id="word-ex-fi" autocomplete="off" placeholder="T.ex. en exempelmening på finska">
         </label>
         <label class="field">
           <span>Datum <span class="field-opt">(valfritt — annars kö)</span></span>
@@ -215,7 +220,7 @@
         <span id="modal-side" class="word-side">Finska</span>
         <span id="modal-text" class="word-text"></span>
         <span id="modal-example" class="word-example hidden"></span>
-        <span id="modal-hint" class="word-hint">Tryck för att visa betydelsen</span>
+        <span id="modal-hint" class="word-hint"></span>
       </button>
       <button id="modal-close" class="icon-btn modal-close" type="button" aria-label="Stäng">
         <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>

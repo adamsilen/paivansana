@@ -17,7 +17,6 @@ window.PS_I18N = {
 
   todayEyebrow: "Dagens ord",
   loadingWord: "Hämtar dagens ord…",
-  tapToReveal: "Tryck för att visa betydelsen",
   noWordToday: "Inget ord förberett för idag.",
 
   historyTitle: "Historik",

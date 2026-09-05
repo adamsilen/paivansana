@@ -145,10 +145,9 @@
     $("#word-side").textContent = onSv ? "Svenska" : "Finska";
     $("#word-text").textContent = onSv ? todayWord.swedish : todayWord.finnish;
     $("#word-hint").textContent = "";
-    const ex = onSv ? todayWord.example : null;
+    const ex = onSv ? todayWord.example_sv : todayWord.example_fi;
     $("#word-example").classList.toggle("hidden", !ex);
     if (ex) $("#word-example").textContent = ex;
-
   }
 
   function flipToday() {
@@ -202,10 +201,16 @@
     $("#practice-feedback").classList.add("hidden");
     $("#practice-next").classList.add("hidden");
 
+    const exFi = $("#practice-example-fi");
+    exFi.classList.add("hidden");
+
     if (practiceDir === "sv_fi") {
       // Swedish shown → type the Finnish word
       $("#practice-side").textContent = "Svenska";
       $("#practice-text").textContent = practiceWord.swedish;
+      const ex = practiceWord.example_sv;
+      exFi.classList.toggle("hidden", !ex);
+      if (ex) exFi.textContent = ex;
       $("#practice-hint").textContent = "";
       $("#practice-exercise").classList.remove("hidden");
       $("#practice-input").value = "";
@@ -214,7 +219,10 @@
       // Finnish shown → reveal the Swedish meaning
       $("#practice-side").textContent = "Finska";
       $("#practice-text").textContent = practiceWord.finnish;
-      $("#practice-hint").textContent = T.tapToReveal;
+      const ex = practiceWord.example_fi;
+      exFi.classList.toggle("hidden", !ex);
+      if (ex) exFi.textContent = ex;
+      $("#practice-hint").textContent = "";
       $("#practice-exercise").classList.add("hidden");
     }
   }
@@ -226,7 +234,7 @@
     card.classList.add("revealed");
     $("#practice-answer-wrap").classList.remove("hidden");
     $("#practice-answer").textContent = practiceWord.swedish;
-    const ex = practiceWord.example;
+    const ex = practiceWord.example_sv;
     $("#practice-example").classList.toggle("hidden", !ex);
     if (ex) $("#practice-example").textContent = ex;
     $("#practice-hint").textContent = "";
@@ -316,10 +324,10 @@
     card.classList.toggle("revealed", modalRevealed);
     $("#modal-side").textContent = modalRevealed ? "Svenska" : "Finska";
     $("#modal-text").textContent = modalRevealed ? modalWord.swedish : modalWord.finnish;
-    const ex = modalRevealed ? modalWord.example : null;
+    const ex = modalRevealed ? modalWord.example_sv : modalWord.example_fi;
     $("#modal-example").classList.toggle("hidden", !ex);
     if (ex) $("#modal-example").textContent = ex;
-    $("#modal-hint").textContent = modalRevealed ? "" : T.tapToReveal;
+    $("#modal-hint").textContent = "";
   }
 
   /* ════════════════════════ ADMIN ════════════════════════ */
@@ -343,7 +351,8 @@
       const row = document.createElement("div");
       row.className = "word-row admin-row";
       const dateHtml = isQueue ? "" : `<span class="word-row-date">${esc(w.assigned_date)}</span>`;
-      const exHtml = w.example ? `<span class="word-row-ex">${esc(w.example)}</span>` : "";
+      const exParts = [w.example_sv, w.example_fi].filter(Boolean);
+      const exHtml = exParts.length ? `<span class="word-row-ex">${exParts.map(esc).join(" · ")}</span>` : "";
       row.innerHTML = `<span class="row-text"><span class="word-row-fi">${esc(w.finnish)}</span><span class="word-row-sep">→</span><span class="word-row-sv">${esc(w.swedish)}</span>${exHtml}</span>${dateHtml}<button class="row-delete" title="Ta bort">×</button>`;
       row.querySelector(".row-delete").addEventListener("click", async () => {
         await api.deleteWord(w.id);
@@ -357,14 +366,16 @@
     e.preventDefault();
     const finnish = $("#word-finnish").value.trim();
     const swedish = $("#word-swedish").value.trim();
-    const example = $("#word-ex").value.trim() || null;
+    const example_sv = $("#word-ex-sv").value.trim() || null;
+    const example_fi = $("#word-ex-fi").value.trim() || null;
     const date = $("#word-date").value || null;
     $("#admin-error").textContent = "";
     try {
-      await api.insertWord({ finnish, swedish, example, assigned_date: date, created_by: api.session.user.id });
+      await api.insertWord({ finnish, swedish, example_sv, example_fi, assigned_date: date, created_by: api.session.user.id });
       $("#word-finnish").value = "";
       $("#word-swedish").value = "";
-      $("#word-ex").value = "";
+      $("#word-ex-sv").value = "";
+      $("#word-ex-fi").value = "";
       $("#word-date").value = "";
       renderAdmin();
     } catch (err) {

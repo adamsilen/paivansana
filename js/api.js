@@ -131,14 +131,14 @@
 
   // History: words whose date has passed (or is today)
   api.fetchHistory = () =>
-    request(REST + "/words?assigned_date=not.is.null&select=id,finnish,swedish,example,assigned_date&order=assigned_date.desc");
+    request(REST + "/words?assigned_date=not.is.null&select=id,finnish,swedish,example_sv,example_fi,assigned_date&order=assigned_date.desc");
 
   /* ── admin ── */
   api.fetchQueue = () =>
-    request(REST + "/words?assigned_date=is.null&select=id,finnish,swedish,example,created_at&order=created_at");
+    request(REST + "/words?assigned_date=is.null&select=id,finnish,swedish,example_sv,example_fi,created_at&order=created_at");
 
   api.fetchScheduled = () =>
-    request(REST + "/words?assigned_date=gt." + todayISO() + "&select=id,finnish,swedish,example,assigned_date&order=assigned_date");
+    request(REST + "/words?assigned_date=gt." + todayISO() + "&select=id,finnish,swedish,example_sv,example_fi,assigned_date&order=assigned_date");
 
   api.insertWord = (row) =>
     request(REST + "/words", { method: "POST", body: JSON.stringify(row) });
