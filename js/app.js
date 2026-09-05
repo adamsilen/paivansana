@@ -233,6 +233,7 @@
     const card = $("#practice-card");
     card.classList.add("revealed");
     $("#practice-answer-wrap").classList.remove("hidden");
+    $("#practice-answer-side").textContent = "Svenska";
     $("#practice-answer").textContent = practiceWord.swedish;
     const ex = practiceWord.example_sv;
     $("#practice-example").classList.toggle("hidden", !ex);
@@ -252,6 +253,16 @@
 
     // the exercise is done — show the result instead
     $("#practice-exercise").classList.add("hidden");
+
+    // reveal the Finnish answer on the card, with its extra field
+    const card = $("#practice-card");
+    card.classList.add("revealed");
+    $("#practice-answer-wrap").classList.remove("hidden");
+    $("#practice-answer-side").textContent = "Finska";
+    $("#practice-answer").textContent = practiceWord.finnish;
+    const ex = practiceWord.example_fi;
+    $("#practice-example").classList.toggle("hidden", !ex);
+    if (ex) $("#practice-example").textContent = ex;
 
     const fb = $("#practice-feedback");
     fb.classList.remove("hidden", "good", "bad");
