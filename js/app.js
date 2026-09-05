@@ -116,8 +116,6 @@
   async function loadToday() {
     $("#today-loading").classList.remove("hidden");
     $("#word-card").classList.add("hidden");
-    $("#today-exercise").classList.add("hidden");
-    $("#today-feedback").classList.add("hidden");
     $("#today-empty").classList.add("hidden");
     $("#push-onboarding").classList.add("hidden");
 
@@ -151,10 +149,6 @@
     $("#word-example").classList.toggle("hidden", !ex);
     if (ex) $("#word-example").textContent = ex;
 
-    // exercise only on the Swedish side, and it stays until the answer is right
-    const showExercise = onSv && !todayChecked;
-    $("#today-exercise").classList.toggle("hidden", !showExercise);
-    if (showExercise) setTimeout(() => $("#today-input").focus(), 50);
   }
 
   function flipToday() {
@@ -162,27 +156,6 @@
     todaySide = todaySide === "fi" ? "sv" : "fi";
     renderToday();
     api.putState("today:" + api.todayISO(), todaySide);
-  }
-
-  function checkToday() {
-    if (!todayWord || todayChecked) return;
-    const input = $("#today-input").value;
-    if (!input.trim()) return;
-    const ok = isCorrect(input, todayWord.finnish);
-    const fb = $("#today-feedback");
-    fb.classList.remove("hidden", "good", "bad");
-    if (ok) {
-      todayChecked = true;
-      api.logAttempt(todayWord.id, "sv_fi", true);
-      fb.classList.add("good");
-      fb.textContent = "Rätt! 🎉";
-      $("#today-exercise").classList.add("hidden");
-    } else {
-      api.logAttempt(todayWord.id, "sv_fi", false);
-      fb.classList.add("bad");
-      fb.textContent = "Rätt svar: " + todayWord.finnish;
-      $("#today-input").select(); // retry directly
-    }
   }
 
   /* ════════════════════════ PRACTICE ════════════════════════ */
@@ -565,8 +538,6 @@
 
   // today
   $("#word-card").addEventListener("click", flipToday);
-  $("#today-check").addEventListener("click", checkToday);
-  $("#today-input").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); checkToday(); } });
 
   // practice
   $("#practice-card").addEventListener("click", revealPractice);

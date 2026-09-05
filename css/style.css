@@ -731,8 +731,8 @@ h2 { font-size: 28px; }
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 10px;
   width: 100%;
-  min-height: 240px;
-  padding: 40px 28px;
+  min-height: 180px;
+  padding: 30px 28px;
   background: var(--card);
   border: none;
   border-radius: var(--radius-lg);
@@ -745,7 +745,6 @@ h2 { font-size: 28px; }
 .word-card:active { transform: scale(.98); }
 .word-card.revealed {
   background: var(--sage-tint);
-  box-shadow: var(--shadow-lift);
 }
 
 .word-side {
