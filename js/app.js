@@ -320,6 +320,16 @@
     $("#word-modal").classList.add("hidden");
     modalWord = null;
   }
+  function renderModal() {
+    const card = $("#modal-card");
+    card.classList.toggle("revealed", modalRevealed);
+    $("#modal-side").textContent = modalRevealed ? "Svenska" : "Finska";
+    $("#modal-text").textContent = modalRevealed ? modalWord.swedish : modalWord.finnish;
+    const ex = modalRevealed ? modalWord.example_sv : modalWord.example_fi;
+    $("#modal-example").classList.toggle("hidden", !ex);
+    if (ex) $("#modal-example").textContent = ex;
+    $("#modal-hint").textContent = "";
+  }
 
   /* ── edit sheet (shared by archive + admin) ── */
   let editWord = null, editContext = "history";
