@@ -1091,3 +1091,23 @@ h2 { font-size: 28px; }
 .archive-add { margin-bottom: 14px; }
 .archive-add-btn { width: 100%; }
 .archive-add .admin-form { margin-top: 12px; }
+
+/* ── word editing (modal) ──────────────────────────────── */
+.modal-edit {
+  position: absolute; z-index: 2;
+  top: calc(var(--safe-top) + 18px);
+  left: 18px;
+}
+.modal-edit-form { text-align: left; }
+.modal-edit-form .edit-btns { display: flex; gap: 10px; }
+.modal-edit-form .edit-btns .btn { flex: 1; }
+.edit-delete { margin: 12px auto 0; color: var(--danger); }
+.row-edit {
+  flex: none; width: 30px; height: 30px;
+  display: grid; place-items: center;
+  border: none; border-radius: 50%;
+  background: transparent; color: var(--ink-faint);
+  cursor: pointer; padding: 0;
+}
+.row-edit svg { width: 15px; height: 15px; }
+.row-edit:active { transform: scale(.92); }

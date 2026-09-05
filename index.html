@@ -249,6 +249,38 @@
       <button id="modal-close" class="icon-btn modal-close" type="button" aria-label="Stäng">
         <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
       </button>
+      <button id="modal-edit" class="icon-btn modal-edit" type="button" aria-label="Redigera">
+        <svg viewBox="0 0 24 24"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg>
+      </button>
+
+      <form id="modal-edit-form" class="admin-form modal-edit-form hidden">
+        <label class="field">
+          <span>Finska</span>
+          <input type="text" id="edit-finnish" required autocomplete="off">
+        </label>
+        <label class="field">
+          <span>Extra (finska) <span class="field-opt">(valfritt)</span></span>
+          <input type="text" id="edit-ex-fi" autocomplete="off">
+        </label>
+        <label class="field">
+          <span>Svenska</span>
+          <input type="text" id="edit-swedish" required autocomplete="off">
+        </label>
+        <label class="field">
+          <span>Extra (svenska) <span class="field-opt">(valfritt)</span></span>
+          <input type="text" id="edit-ex-sv" autocomplete="off">
+        </label>
+        <label class="field" id="edit-date-wrap">
+          <span>Datum <span class="field-opt">(valfritt)</span></span>
+          <input type="date" id="edit-date">
+        </label>
+        <p class="form-error" id="edit-error"></p>
+        <div class="edit-btns">
+          <button type="submit" class="btn btn-primary">Spara</button>
+          <button type="button" id="edit-cancel" class="btn btn-ghost">Avbryt</button>
+        </div>
+        <button type="button" id="edit-delete" class="link-btn edit-delete">Ta bort ordet</button>
+      </form>
     </div>
 
     <!-- ── tabbar ─────────────────────────────────────────── -->
