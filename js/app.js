@@ -99,6 +99,7 @@
     $("#today-feedback").classList.add("hidden");
     $("#today-done-note").classList.add("hidden");
     $("#today-empty").classList.add("hidden");
+    $("#push-onboarding").classList.add("hidden");
 
     const [word, savedSide] = await Promise.all([
       api.fetchDailyWord(),
@@ -111,9 +112,10 @@
     $("#today-loading").classList.add("hidden");
     if (!word) {
       $("#today-empty").classList.remove("hidden");
-      return;
+    } else {
+      renderToday();
     }
-    renderToday();
+    maybeShowPushOnboarding();
   }
 
   function renderToday() {
@@ -377,6 +379,67 @@
     return Uint8Array.from(raw, (c) => c.charCodeAt(0));
   }
 
+  /* Onboarding: ask once (per user) on the Today view. Dismissal is
+     stored server-side and snoozes the card for 14 days. */
+  async function maybeShowPushOnboarding() {
+    const card = $("#push-onboarding");
+    if (!$("#push-optin")) return; // card replaced by success state
+    card.classList.add("hidden");
+    if (!("serviceWorker" in navigator) || !("PushManager" in window) || typeof Notification === "undefined") return;
+    if (Notification.permission === "denied") return;
+
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      if (await reg.pushManager.getSubscription()) return; // this device already subscribed
+    } catch { return; }
+
+    const dismissed = await api.fetchState("push:onboarding-dismissed");
+    if (dismissed && dismissed !== "subscribed") {
+      const days = (Date.now() - Date.parse(dismissed)) / 86400000;
+      if (!isNaN(days) && days < 14) return;
+    }
+
+    const desc = card.querySelector(".onboarding-desc");
+    const optin = $("#push-optin");
+    if (isIos() && !isStandalone()) {
+      optin.classList.add("hidden");
+      desc.textContent = "Installera appen på hemskärmen (Safari → Dela → Lägg till på hemskärmen) så kan du få dagens ord som notis.";
+    } else {
+      optin.classList.remove("hidden");
+      desc.textContent = "En liten påminnelse varje dag, så du aldrig missar ett ord.";
+    }
+    card.classList.remove("hidden");
+  }
+
+  async function optInPush() {
+    const btn = $("#push-optin");
+    const card = $("#push-onboarding");
+    btn.disabled = true;
+    try {
+      const perm = await Notification.requestPermission();
+      if (perm !== "granted") throw new Error("Notiser är blockerade — tillåt dem i webbläsarens inställningar och försök igen.");
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: b64ToUint8(window.PS_CONFIG.VAPID_PUBLIC_KEY),
+      });
+      await api.saveSubscription(sub);
+      pushSub = sub;
+      api.putState("push:onboarding-dismissed", "subscribed");
+      card.innerHTML = '<p class="onboarding-title">Klart! 🎉</p><p class="onboarding-desc">Du får dagens ord som notis varje dag.</p>';
+      setTimeout(() => card.classList.add("hidden"), 2600);
+    } catch (err) {
+      const desc = card.querySelector(".onboarding-desc");
+      if (desc) desc.textContent = err.message || "Något gick fel.";
+      btn.disabled = false;
+    }
+  }
+
+  function dismissPushOnboarding() {
+    $("#push-onboarding").classList.add("hidden");
+    api.putState("push:onboarding-dismissed", new Date().toISOString());
+  }
+
   async function renderSettings() {
     const toggle = $("#push-toggle");
     const note = $("#push-note");
@@ -478,9 +541,11 @@
   $("#modal-close").addEventListener("click", closeModal);
   $("#modal-backdrop").addEventListener("click", closeModal);
 
-  // settings
+  // settings + push onboarding
   $("#open-settings").addEventListener("click", () => switchTab("settings"));
   $("#push-toggle").addEventListener("change", togglePush);
+  $("#push-optin").addEventListener("click", optInPush);
+  $("#push-dismiss").addEventListener("click", dismissPushOnboarding);
 
   // admin
   $("#add-word-form").addEventListener("submit", addWord);

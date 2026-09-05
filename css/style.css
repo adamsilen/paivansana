@@ -979,3 +979,26 @@ h2 { font-size: 28px; }
   border-top: 1.5px solid var(--line);
   color: var(--ink-soft); font-size: 13.5px;
 }
+
+/* ── push onboarding card ───────────────────────────────── */
+.onboarding-card {
+  margin-top: 14px;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 24px 22px;
+  text-align: center;
+}
+.onboarding-icon {
+  width: 52px; height: 52px;
+  margin: 0 auto 12px;
+  display: grid; place-items: center;
+  background: var(--sage-tint);
+  border-radius: 50%;
+  color: var(--sage);
+}
+.onboarding-icon svg { width: 26px; height: 26px; }
+.onboarding-title { font-family: var(--font-display); font-size: 19px; font-weight: 600; }
+.onboarding-desc { color: var(--ink-soft); font-size: 14px; margin: 6px 0 16px; }
+.onboarding-btns { display: flex; gap: 10px; }
+.onboarding-btns .btn { flex: 1; }
