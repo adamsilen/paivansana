@@ -1100,7 +1100,10 @@ h2 { font-size: 28px; }
 .archive-add-btn { width: 100%; }
 .archive-add .admin-form { margin-top: 12px; }
 
-.edit-delete { display: block; margin: 14px auto 0; color: var(--danger); }
+.edit-delete {
+  display: block; margin: 18px auto 0;
+  color: var(--danger); font-size: 14px; font-weight: 600;
+}
 .row-edit {
   flex: none; width: 30px; height: 30px;
   display: grid; place-items: center;
@@ -1151,3 +1154,12 @@ h2 { font-size: 28px; }
   border-top: 1px solid var(--line);
 }
 .sheet-actions .btn { flex: 1; }
+
+/* form inside a sheet: strip the card look */
+.sheet .admin-form {
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  margin-bottom: 0;
+}
