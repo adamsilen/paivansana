@@ -9,9 +9,9 @@
   --ink-soft:   #7C8074;
   --ink-faint:  #A9AC9F;
 
-  --sage:       #86A68F;
-  --sage-soft:  #DCE8DD;
-  --sage-tint:  #EEF4EE;
+  --sage:       #6B93B8;
+  --sage-soft:  #D4E2ED;
+  --sage-tint:  #EDF3F8;
   --rose:       #D9A5A0;
   --rose-tint:  #F7E9E6;
   --butter:     #E9D8A6;
@@ -143,7 +143,7 @@ h2 { font-size: 28px; }
 .btn-primary {
   width: 100%;
   background: var(--sage); color: #fff;
-  box-shadow: 0 6px 16px rgba(134,166,143,.35);
+  box-shadow: 0 6px 16px rgba(107,147,184,.35);
 }
 .btn-primary:disabled { opacity: .6; }
 .btn-ghost { background: var(--cream-deep); color: var(--ink-soft); }
