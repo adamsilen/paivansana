@@ -1097,7 +1097,9 @@ h2 { font-size: 28px; }
 }
 .pr-label { color: var(--ink-soft); font-weight: 600; flex: none; }
 .pr-value { font-weight: 700; color: var(--ink); overflow-wrap: break-word; }
-.practice-result.bad .practice-result-row:first-of-type .pr-value { color: var(--danger); }
+.pr-value .ch-ok  { color: var(--good); }
+.pr-value .ch-bad { color: var(--danger); }
+.practice-result.bad .practice-result-row:first-of-type .pr-value { color: var(--ink); }
 
 /* ── archive: add own word ─────────────────────────────── */
 .archive-add { margin-bottom: 14px; }

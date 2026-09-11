@@ -104,12 +104,53 @@
     switchTab("today");
   }
 
-  /* ── correction: case-insensitive + trimmed, diacritics matter ── */
+  /* ── correction: case-insensitive, punctuation ignored, diacritics matter ── */
+  function stripPunctuation(s) {
+    return (s || "").replace(/[^\p{L}\p{N}\s]/gu, "");
+  }
   function normalize(s) {
-    return (s || "").trim().toLowerCase().replace(/\s+/g, " ");
+    return stripPunctuation(s).trim().toLowerCase().replace(/\s+/g, " ");
   }
   function isCorrect(input, answer) {
     return normalize(input) === normalize(answer);
+  }
+
+  /* Character-level diff (LCS) between the typed answer and the correct one,
+     ignoring punctuation and case. Matching characters are green; extra typed
+     characters and missing answer characters are red. */
+  function diffAnswer(input, answer) {
+    const clean = (s) => stripPunctuation(s).replace(/\s+/g, " ").trim();
+    const a = clean(input), b = clean(answer);
+    const ca = [...a], cb = [...b];
+    const la = ca.map((c) => c.toLowerCase()), lb = cb.map((c) => c.toLowerCase());
+    const n = la.length, m = lb.length;
+
+    // LCS length table
+    const dp = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+    for (let i = n - 1; i >= 0; i--)
+      for (let j = m - 1; j >= 0; j--)
+        dp[i][j] = la[i] === lb[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+
+    const esc = (c) => c.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const span = (c, cls) => `<span class="${cls}">${esc(c)}</span>`;
+    const typed = [], correct = [];
+    let i = 0, j = 0;
+    while (i < n && j < m) {
+      if (la[i] === lb[j]) {
+        typed.push(span(ca[i], "ch-ok"));
+        correct.push(span(cb[j], "ch-ok"));
+        i++; j++;
+      } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+        typed.push(span(ca[i], "ch-bad")); // extra/wrong typed character
+        i++;
+      } else {
+        correct.push(span(cb[j], "ch-bad")); // missing answer character
+        j++;
+      }
+    }
+    while (i < n) typed.push(span(ca[i++], "ch-bad"));
+    while (j < m) correct.push(span(cb[j++], "ch-bad"));
+    return { typed: typed.join(""), correct: correct.join("") };
   }
 
   /* ════════════════════════ TODAY ════════════════════════ */
@@ -269,8 +310,9 @@
     fb.classList.add(ok ? "good" : "bad");
     fb.querySelector(".practice-result-verdict").textContent = ok ? "Rätt! 🎉" : "Inte riktigt";
     const rows = fb.querySelectorAll(".practice-result-row .pr-value");
-    rows[0].textContent = input.trim();
-    rows[1].textContent = practiceWord.finnish;
+    const diff = diffAnswer(input, practiceWord.finnish);
+    rows[0].innerHTML = diff.typed;
+    rows[1].innerHTML = diff.correct;
 
     $("#practice-next").classList.remove("hidden");
   }
