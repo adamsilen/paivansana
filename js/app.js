@@ -402,6 +402,7 @@
     $("#edit-date-wrap").classList.toggle("hidden", editContext !== "admin");
     $("#edit-date").value = w.assigned_date || "";
     $("#edit-error").textContent = "";
+    if (editContext === "admin") api.fetchTakenDates().then((t) => { takenDates = t; });
     $("#edit-backdrop").classList.remove("hidden");
     $("#edit-sheet").classList.remove("hidden");
   }
@@ -424,7 +425,15 @@
       example_fi: $("#edit-ex-fi").value.trim() || null,
       example_sv: $("#edit-ex-sv").value.trim() || null,
     };
-    if (editContext === "admin") patch.assigned_date = $("#edit-date").value || null;
+    if (editContext === "admin") {
+      const date = $("#edit-date").value || null;
+      // the word's own current date is always allowed (no change)
+      if (date && date !== editWord.assigned_date && takenDates.has(date)) {
+        $("#edit-error").textContent = "Det finns redan ett ord den " + date + " — välj ett annat datum.";
+        return;
+      }
+      patch.assigned_date = date;
+    }
     $("#edit-error").textContent = "";
     try {
       await api.updateWord(editWord.id, patch);
@@ -472,13 +481,17 @@
   }
 
   /* ════════════════════════ ADMIN ════════════════════════ */
+  let takenDates = new Set(); // dates already assigned to a word (admin only)
+
   async function renderAdmin() {
     if (!api.isAdmin()) return;
     $("#admin-error").textContent = "";
-    const [queue, scheduled] = await Promise.all([
+    const [queue, scheduled, taken] = await Promise.all([
       api.fetchQueue().catch(() => []),
       api.fetchScheduled().catch(() => []),
+      api.fetchTakenDates(),
     ]);
+    takenDates = taken;
     renderWordRows("#queue-list", queue, "#queue-empty", true);
     renderWordRows("#scheduled-list", scheduled, "#scheduled-empty", false);
     $("#queue-count").textContent = queue.length ? "(" + queue.length + ")" : "";
@@ -508,6 +521,10 @@
     const example_fi = $("#word-ex-fi").value.trim() || null;
     const date = $("#word-date").value || null;
     $("#admin-error").textContent = "";
+    if (date && takenDates.has(date)) {
+      $("#admin-error").textContent = "Det finns redan ett ord den " + date + " — välj ett annat datum.";
+      return;
+    }
     try {
       await api.insertWord({ finnish, swedish, example_sv, example_fi, assigned_date: date, created_by: api.session.user.id });
       $("#word-finnish").value = "";

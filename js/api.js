@@ -144,6 +144,13 @@
   api.fetchScheduled = () =>
     request(REST + "/words?assigned_date=gt." + todayISO() + "&select=id,finnish,swedish,example_sv,example_fi,assigned_date&order=assigned_date");
 
+  // All dates that already have a word assigned (for date-picker validation).
+  // Admin-only via RLS: includes past + today + future.
+  api.fetchTakenDates = () =>
+    request(REST + "/words?assigned_date=not.is.null&select=assigned_date")
+      .then((rows) => new Set((rows || []).map((r) => r.assigned_date)))
+      .catch(() => new Set());
+
   api.insertWord = (row) =>
     request(REST + "/words", { method: "POST", body: JSON.stringify(row) });
 
