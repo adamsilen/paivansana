@@ -55,6 +55,43 @@ Daglig notis med dagens ord, via Vercel cron (`0 16 * * *`) → `api/notify.js`.
 
 På iPhone krävs att appen är installerad på hemskärmen (iOS 16.4+). Användare slår på per enhet via kugghjulet på I dag-sidan.
 
+## Feature flags
+
+Nya funktioner kan skeppas till produktion men hållas avstängda tills de slås på — koden finns hos alla användare men är vilande. Flaggor styrs av tabellen `ps_feature_flags` (ON/OFF per flagga, ingen procentuell utrullning) och läses in en gång vid appstart av `js/flags.js`.
+
+**Så här lägger du till en flaggad funktion:**
+
+1. Wrappa koden i appen:
+
+   ```js
+   if (window.PsFlags.on("min_funktion")) { /* ny funktion */ }
+   ```
+
+   `PsFlags.on()` returnerar alltid `false` för okända flaggor — säkert att anropa även innan flaggan finns i databasen. Flaggor läses in i `boot`-steget i `app.js` (innan första vyn renderas), så `PsFlags.on()` kan användas var som helst efter inloggning.
+
+2. Skapa flaggan i databasen (Supabase SQL Editor):
+
+   ```sql
+   insert into public.ps_feature_flags (key, description)
+   values ('min_funktion', 'Kort beskrivning av funktionen');
+   ```
+
+3. Deploya som vanligt. Funktionen är osynlig tills den slås på.
+
+**Så här slår du på/av:** Inställningar → Funktionsflaggor (endast admin) — eller direkt i SQL:
+
+```sql
+update public.ps_feature_flags set enabled = true where key = 'min_funktion';
+```
+
+**Så här tar du bort en flagga:** ta bort `if (window.PsFlags.on(...))`-wrappningen ur koden (behåll koden eller ta bort den beroende på om funktionen ska finnas kvar) och städa i databasen:
+
+```sql
+delete from public.ps_feature_flags where key = 'min_funktion';
+```
+
+Notera: flaggor cachas per session — en ändring slår igenom för en användare nästa gång appen laddas, inte mitt i en session. Om flagg-fetchen misslyckas är alla flaggor av (fail safe).
+
 ## Roller
 
 * **Admin** — lägger till ord (med eller utan datum), ser kön, ser schemalagda ord, kan ta bort.
