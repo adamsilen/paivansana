@@ -61,7 +61,7 @@
     if (tab === "practice") { showView("practice"); loadPractice(); }
     if (tab === "history") { showView("history"); renderHistory(); }
     if (tab === "admin") { showView("admin"); renderAdmin(); }
-    if (tab === "settings") { showView("settings"); renderSettings(); }
+    if (tab === "settings") { showView("settings"); renderSettings(); renderFlags(); }
     window.scrollTo(0, 0);
   }
 
@@ -659,6 +659,62 @@
     toggle.disabled = false;
   }
 
+  /* ════════════════════════ FEATURE FLAGS (admin) ════════════════════════ */
+  async function renderFlags() {
+    const card = $("#flags-card");
+    const list = $("#flags-list");
+    const empty = $("#flags-empty");
+    const note = $("#flags-note");
+    card.hidden = !api.isAdmin();
+    if (!api.isAdmin()) return;
+    list.innerHTML = "";
+    note.classList.add("hidden");
+
+    const flags = await api.fetchFlags();
+    empty.classList.toggle("hidden", flags.length > 0);
+
+    flags.forEach((f) => {
+      const row = document.createElement("div");
+      row.className = "flag-row";
+      row.innerHTML = `
+        <div class="flag-info">
+          <p class="toggle-title">${esc(f.key)}</p>
+          <p class="toggle-desc">${esc(f.description || "")}</p>
+          <label class="flag-rollout">Utrullning
+            <input type="number" min="0" max="100" value="${f.rollout || 0}" data-flag-rollout="${esc(f.key)}"> %
+          </label>
+        </div>
+        <input type="checkbox" class="toggle" data-flag-toggle="${esc(f.key)}" ${f.enabled ? "checked" : ""}>`;
+      list.appendChild(row);
+    });
+
+    list.querySelectorAll("[data-flag-toggle]").forEach((el) => {
+      el.addEventListener("change", () => saveFlag(el.dataset.flagToggle, { enabled: el.checked }));
+    });
+    list.querySelectorAll("[data-flag-rollout]").forEach((el) => {
+      el.addEventListener("change", () => {
+        const v = Math.max(0, Math.min(100, parseInt(el.value, 10) || 0));
+        el.value = v;
+        saveFlag(el.dataset.flagRollout, { rollout: v });
+      });
+    });
+  }
+
+  async function saveFlag(key, patch) {
+    const note = $("#flags-note");
+    note.classList.add("hidden");
+    try {
+      await api.upsertFlag({ key, ...patch, updated_at: new Date().toISOString() });
+      note.textContent = "Sparat.";
+      note.classList.remove("hidden");
+      setTimeout(() => note.classList.add("hidden"), 2000);
+    } catch (err) {
+      note.textContent = err.message || T.errorGeneric;
+      note.classList.remove("hidden");
+      renderFlags(); // revert UI to server state
+    }
+  }
+
   /* ── helpers ── */
   function esc(s) {
     const d = document.createElement("div");
@@ -755,8 +811,12 @@
   }
 
   /* ── boot ── */
-  api.init().then((session) => {
-    if (session) enterApp();
-    else renderAuth();
+  api.init().then(async (session) => {
+    if (session) {
+      await window.PsFlags.load().catch(() => {});
+      enterApp();
+    } else {
+      renderAuth();
+    }
   });
 })();

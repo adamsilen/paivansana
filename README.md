@@ -12,6 +12,7 @@ Kör [`supabase/schema.sql`](supabase/schema.sql) i Supabase SQL Editor (samma p
 * `words` — finska/svenska + `assigned_date` (null = kö)
 * `attempts` — elevens övningsförsök
 * `user_state` — per-användare UI-state (t.ex. vilken sida av dagens ord som visades)
+* `ps_feature_flags` — feature flags (se [`supabase/migration-feature-flags.sql`](supabase/migration-feature-flags.sql))
 * `get_daily_word()` — atomisk daglig dragning (första anropet drar ett slumpat kö-ord; samtidiga klienter kan aldrig få olika ord tack vare `FOR UPDATE SKIP LOCKED`)
 
 Gör sedan herrsilen@gmail.com till admin (efter att kontot skapats):
@@ -70,6 +71,7 @@ paivansana/
 ├── js/
 │   ├── config.js        # Supabase-nycklar (samma projekt som tidy)
 │   ├── api.js           # fetch-baserad Supabase-klient + RPC
+│   ├── flags.js         # feature flags (ps_feature_flags, admin-styrda)
 │   ├── i18n.js          # svenska strängar
 │   └── app.js           # vyer & interaktioner
 └── supabase/schema.sql

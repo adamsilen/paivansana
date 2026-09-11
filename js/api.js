@@ -202,6 +202,19 @@
     return btoa(String.fromCharCode(...new Uint8Array(buf)));
   }
 
+  /* ── feature flags ── */
+  api.fetchFlags = () =>
+    request(REST + "/ps_feature_flags?select=key,enabled,rollout")
+      .then((rows) => rows || [])
+      .catch(() => []);
+
+  api.upsertFlag = (row) =>
+    request(REST + "/ps_feature_flags?on_conflict=key", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+      body: JSON.stringify(row),
+    });
+
   /* ── helpers ── */
   function todayISO() {
     return new Date().toLocaleDateString("sv-SE"); // YYYY-MM-DD in local tz
