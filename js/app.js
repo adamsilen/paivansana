@@ -680,9 +680,6 @@
         <div class="flag-info">
           <p class="toggle-title">${esc(f.key)}</p>
           <p class="toggle-desc">${esc(f.description || "")}</p>
-          <label class="flag-rollout">Utrullning
-            <input type="number" min="0" max="100" value="${f.rollout || 0}" data-flag-rollout="${esc(f.key)}"> %
-          </label>
         </div>
         <input type="checkbox" class="toggle" data-flag-toggle="${esc(f.key)}" ${f.enabled ? "checked" : ""}>`;
       list.appendChild(row);
@@ -690,13 +687,6 @@
 
     list.querySelectorAll("[data-flag-toggle]").forEach((el) => {
       el.addEventListener("change", () => saveFlag(el.dataset.flagToggle, { enabled: el.checked }));
-    });
-    list.querySelectorAll("[data-flag-rollout]").forEach((el) => {
-      el.addEventListener("change", () => {
-        const v = Math.max(0, Math.min(100, parseInt(el.value, 10) || 0));
-        el.value = v;
-        saveFlag(el.dataset.flagRollout, { rollout: v });
-      });
     });
   }
 

@@ -204,7 +204,7 @@
 
   /* ── feature flags ── */
   api.fetchFlags = () =>
-    request(REST + "/ps_feature_flags?select=key,enabled,rollout")
+    request(REST + "/ps_feature_flags?select=key,enabled")
       .then((rows) => rows || [])
       .catch(() => []);
 

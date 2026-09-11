@@ -1013,17 +1013,6 @@ h2 { font-size: 28px; }
 }
 .flag-row:first-child { border-top: none; padding-top: 4px; }
 .flag-info { min-width: 0; }
-.flag-rollout {
-  display: flex; align-items: center; gap: 6px;
-  margin-top: 6px;
-  color: var(--ink-soft); font-size: 13px;
-}
-.flag-rollout input {
-  width: 58px; padding: 4px 6px;
-  border: 1.5px solid var(--line); border-radius: 8px;
-  font: inherit; font-size: 13px;
-  background: var(--cream);
-}
 
 /* ── push onboarding card ───────────────────────────────── */
 .onboarding-card {
